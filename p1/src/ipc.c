@@ -72,10 +72,7 @@ int main (int argc, char **argv) {
             exit (0);
         } else if (pid > 0) {
             /* parent */
-        } else {
-            /* error */
-            perror ("fork");
-        }
+        } else ERR ("fork");
     }
 
     return EXIT_SUCCESS;
