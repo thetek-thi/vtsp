@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+#include <time.h>
 #include <unistd.h>
 
 #define NUM_WRITER 2
@@ -58,12 +59,15 @@ void sem_init (int sem, int num, int val) {
 }
 
 int main (int argc, char **argv) {
+    time_t init_time;
     size_t i, j;
     pid_t pid;
     key_t key;
     int sem, val;
 
     (void) argc;
+
+    init_time = time (0);
 
     if ((key = ftok (*argv, '0')) < 0) ERR ("ftok");
     if ((sem = semget (key, 3, IPC_CREAT | 0666)) < 0) ERR ("semget");
@@ -79,14 +83,14 @@ int main (int argc, char **argv) {
             for (j = 0; j < NUM_R_OR_W; j++) {
                 /* write */
                 sem_p (sem, SEM_WRITER);
-                printf ("[w%zu] write start\n", i);
+                printf ("[%2zus : w%zu] write start\n", time (0) - init_time, i);
                 sleep (SLEEPTIME);
-                printf ("[w%zu] write done\n", i);
+                printf ("[%2zus : w%zu] write done\n", time (0) - init_time, i);
                 sem_v (sem, SEM_WRITER);
                 /* uncritical */
-                printf ("[w%zu] uncritical start\n", i);
+                printf ("[%2zus : w%zu] uncritical start\n", time (0) - init_time, i);
                 sleep (SLEEPTIME);
-                printf ("[w%zu] uncritical done\n", i);
+                printf ("[%2zus : w%zu] uncritical done\n", time (0) - init_time, i);
             }
             exit (EXIT_SUCCESS);
         } else if (pid > 0) {
@@ -107,9 +111,9 @@ int main (int argc, char **argv) {
                 if (val == 1)
                     sem_p (sem, SEM_WRITER);
                 sem_v (sem, SEM_MUTEX);
-                printf ("[r%zu] read start\n", i);
+                printf ("[%2zus : r%zu] read start\n", time (0) - init_time, i);
                 sleep (SLEEPTIME);
-                printf ("[r%zu] read done\n", i);
+                printf ("[%2zus : r%zu] read done\n", time (0) - init_time, i);
                 sem_p (sem, SEM_MUTEX);
                 val = sem_get (sem, SEM_READER) - 1;
                 sem_set (sem, SEM_READER, val);
@@ -117,9 +121,9 @@ int main (int argc, char **argv) {
                     sem_v (sem, SEM_WRITER);
                 sem_v (sem, SEM_MUTEX);
                 /* uncritical */
-                printf ("[r%zu] uncritical start\n", i);
+                printf ("[%2zus : r%zu] uncritical start\n", time (0) - init_time, i);
                 sleep (SLEEPTIME);
-                printf ("[r%zu] uncritical done\n", i);
+                printf ("[%2zus : r%zu] uncritical done\n", time (0) - init_time, i);
             }
             exit (EXIT_SUCCESS);
         } else if (pid > 0) {
