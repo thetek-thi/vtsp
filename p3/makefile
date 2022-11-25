@@ -1,11 +1,8 @@
 CC     := gcc
 CFLAGS := -Wall -Wextra -g
 
-SRCFILES := $(wildcard src/*.c)
-BINFILES := $(SRCFILES:src/%.c=bin/%)
 
-
-all: mkdir $(BINFILES)
+all: reader-writer
 
 clean:
 	rm -rf bin/
@@ -13,8 +10,8 @@ clean:
 .PHONY: all clean
 
 
-bin/%: src/%.c
-	$(CC) $(CFLAGS) $< -o $@
+reader-writer: mkdir
+	$(CC) $(CFLAGS) src/reader-writer/reader-writer.c -o bin/reader-writer
 
 mkdir:
 	mkdir -p bin/
