@@ -13,6 +13,8 @@
  *   V(right_fork)
  *
  * Problem: the forks are not being used efficiently.
+ *
+ * Alternative solution: "waiter" that hands out the forks if they are available.
  */
 
 #include <stdint.h>
