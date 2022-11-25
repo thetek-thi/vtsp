@@ -29,16 +29,9 @@
     } while (0);
 #define GETFORKS(i) (i % NUM_PHIL), ((i + 1) % NUM_PHIL)
 
-typedef enum {
-    PHILSTATE_EAT,
-    PHILSTATE_THINK,
-    PHILSTATE_WAIT,
-} philstate_t;
-
 typedef struct {
     uint32_t eat_time;
     uint32_t think_time;
-    philstate_t state;
 } phil_t;
 
 union semun {
@@ -105,7 +98,6 @@ int main (int argc, char **argv) {
         phils[i] = (phil_t) {
             .eat_time   = rand () % TIMERANGE + 1,
             .think_time = rand () % TIMERANGE + 1,
-            .state      = PHILSTATE_WAIT,
         };
     }
 
@@ -115,14 +107,11 @@ int main (int argc, char **argv) {
             /* child */
             for (j = 0; j < CYCLES; j++) {
                 sem_p2 (sem, GETFORKS (i));
-                phils[i].state = PHILSTATE_EAT;
                 printf ("%3zus: p%zu eat\n", time (0) - init_time, i);
                 sleep (phils[i].eat_time);
                 sem_v2 (sem, GETFORKS (i));
-                phils[i].state = PHILSTATE_THINK;
                 printf ("%3zus: p%zu think\n", time (0) - init_time, i);
                 sleep (phils[i].think_time);
-                phils[i].state = PHILSTATE_WAIT;
                 printf ("%3zus: p%zu wait\n", time (0) - init_time, i);
             }
             exit (EXIT_SUCCESS);
