@@ -1,2 +1,5 @@
 bin/
-
+src/rpc/math.h
+src/rpc/math_svc.c
+src/rpc/math_clnt.c
+src/rpc/math_xdr.c
