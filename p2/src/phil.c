@@ -116,14 +116,14 @@ int main (int argc, char **argv) {
             for (j = 0; j < CYCLES; j++) {
                 sem_p2 (sem, GETFORKS (i));
                 phils[i].state = PHILSTATE_EAT;
-                printf ("%3zus: p%zu %s\n", time (0) - init_time, i, phils[i].state == PHILSTATE_EAT ? "eat" : phils[i].state == PHILSTATE_THINK ? "think" : "wait");
+                printf ("%3zus: p%zu eat\n", time (0) - init_time, i);
                 sleep (phils[i].eat_time);
                 sem_v2 (sem, GETFORKS (i));
                 phils[i].state = PHILSTATE_THINK;
-                printf ("%3zus: p%zu %s\n", time (0) - init_time, i, phils[i].state == PHILSTATE_EAT ? "eat" : phils[i].state == PHILSTATE_THINK ? "think" : "wait");
+                printf ("%3zus: p%zu think\n", time (0) - init_time, i);
                 sleep (phils[i].think_time);
                 phils[i].state = PHILSTATE_WAIT;
-                printf ("%3zus: p%zu %s\n", time (0) - init_time, i, phils[i].state == PHILSTATE_EAT ? "eat" : phils[i].state == PHILSTATE_THINK ? "think" : "wait");
+                printf ("%3zus: p%zu wait\n", time (0) - init_time, i);
             }
             exit (EXIT_SUCCESS);
         } else if (pid > 0) {
