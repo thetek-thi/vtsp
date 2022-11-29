@@ -3,4 +3,5 @@ set -xe
 
 javac *.java
 #java FigurenThreads
-java Test
+#java Test
+java IncDecThreads
