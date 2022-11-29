@@ -15,6 +15,30 @@
  * Problem: the forks are not being used efficiently.
  *
  * Alternative solution: "waiter" that hands out the forks if they are available.
+ *
+ * Another alternative solution:
+ *
+ * take_fork (philnum) {
+ *   P (mutex)
+ *   state[philnum] = HUNGRY
+ *   if (state[left] != EATING && state[right] != EATING) {
+ *     state[philnum] = EATING
+ *     // philosopher is eating
+ *   }
+ *   V (mutex)
+ *   P (philnum)
+ * }
+ *
+ * put_fork (philnum) {
+ *   P (mutex)
+ *   state[philnum] = THINKING
+ *   // philosopher is thinking
+ *   if (state[left] == HUNGRY)
+ *     V (left)   // "wake up" other philosopher
+ *   if (state[right] == HUNGRY)
+ *     V (right)   // "wake up" other philosopher
+ *   V (mutex)
+ * }
  */
 
 #include <stdint.h>
@@ -26,7 +50,7 @@
 #include <unistd.h>
 
 #define NUM_PHIL   5
-#define CYCLES     3
+#define CYCLES  1000
 #define TIMERANGE 10
 #define SEMOP_P   -1
 #define SEMOP_V    1
@@ -35,17 +59,11 @@
         fprintf (stderr, __VA_ARGS__);          \
         exit (EXIT_FAILURE);                    \
     } while (0);
-
-typedef enum {
-    PHILSTATE_EAT,
-    PHILSTATE_THINK,
-    PHILSTATE_WAIT,
-} philstate_t;
+#define WRAPPER NUM_PHIL
 
 typedef struct {
     uint32_t eat_time;
     uint32_t think_time;
-    philstate_t state;
 } phil_t;
 
 union semun {
@@ -98,9 +116,8 @@ int main (int argc, char **argv) {
 
     for (i = 0; i < NUM_PHIL; i++) {
         phils[i] = (phil_t) {
-            .eat_time   = rand () % TIMERANGE + 1,
-            .think_time = rand () % TIMERANGE + 1,
-            .state      = PHILSTATE_WAIT,
+            .eat_time   = 0,//rand () % TIMERANGE + 1,
+            .think_time = 0,//rand () % TIMERANGE + 1,
         };
     }
 
@@ -109,20 +126,19 @@ int main (int argc, char **argv) {
         if (pid == 0) {
             /* child */
             for (j = 0; j < CYCLES; j++) {
-                sem_p (sem, NUM_PHIL);
+                sem_p (sem, WRAPPER);
+                printf ("%3zus: p%zu wants to eat\n", time (0) - init_time, i);
                 sem_p (sem, i);
                 sem_p (sem, (i + 1) % NUM_PHIL);
-                sem_v (sem, NUM_PHIL);
-                phils[i].state = PHILSTATE_EAT;
-                printf ("%3zus: p%zu %s\n", time (0) - init_time, i, phils[i].state == PHILSTATE_EAT ? "eat" : phils[i].state == PHILSTATE_THINK ? "think" : "wait");
+                sem_v (sem, WRAPPER);
+                printf ("%3zus: p%zu eat\n", time (0) - init_time, i);
                 sleep (phils[i].eat_time);
                 sem_v (sem, i);
                 sem_v (sem, (i + 1) % NUM_PHIL);
-                phils[i].state = PHILSTATE_THINK;
-                printf ("%3zus: p%zu %s\n", time (0) - init_time, i, phils[i].state == PHILSTATE_EAT ? "eat" : phils[i].state == PHILSTATE_THINK ? "think" : "wait");
+                printf ("%3zus: p%zu think\n", time (0) - init_time, i);
                 sleep (phils[i].think_time);
-                phils[i].state = PHILSTATE_WAIT;
-                printf ("%3zus: p%zu %s\n", time (0) - init_time, i, phils[i].state == PHILSTATE_EAT ? "eat" : phils[i].state == PHILSTATE_THINK ? "think" : "wait");
+                printf ("%3zus: p%zu wait\n", time (0) - init_time, i);
+                printf("%zu\n", j);
             }
             exit (EXIT_SUCCESS);
         } else if (pid > 0) {
