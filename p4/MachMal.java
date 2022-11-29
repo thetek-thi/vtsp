@@ -6,4 +6,12 @@ public class MachMal {
     catch (InterruptedException e) {
     }
   }
+
+  public static void eineSekundeLangGarNichts() {
+    try {
+      Thread.sleep(1000);
+    } 
+    catch (InterruptedException e) {
+    }
+  }
 }
