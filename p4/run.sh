@@ -2,5 +2,5 @@
 set -xe
 
 javac *.java
-java FigurenThreads
-
+#java FigurenThreads
+java Test
