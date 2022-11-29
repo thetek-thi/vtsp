@@ -18,27 +18,21 @@ public class UniqueId {
 	}		
 
 	public int getNext() throws IOException {
-        int oldId, newId;
+        rwlock.writeLock().lock();
 
-        rwlock.readLock().lock();
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(file));
-            oldId = in.readInt();
+            int oldId = in.readInt();
             in.close();
-        } finally {
-            rwlock.readLock().unlock();
-        }
 		
-        rwlock.writeLock().lock();
-        try {
             DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
-            newId = ++oldId;
+            int newId = ++oldId;
             out.writeInt(newId);
             out.close();
+
+            return newId;
         } finally {
             rwlock.writeLock().unlock();
         }
-
-		return newId;
 	}
 }

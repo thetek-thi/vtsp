@@ -21,10 +21,12 @@ public class Test {
 
         public void run() {
             for (var i = 0; i < 10; i++) {
-                try {
-                    var next = id.getNext();
-                    System.out.println("thread " + name + ": " + next);
-                } catch (Exception e) { }
+                synchronized (System.out) { // for correct output order
+                    try {
+                        var next = id.getNext();
+                        System.out.println("thread " + name + ": " + next);
+                    } catch (Exception e) { }
+                }
             }
         }
     }
