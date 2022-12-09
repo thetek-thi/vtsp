@@ -4,7 +4,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class AndereFigur extends Figur {
     private ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
-    public void setPosition(char x, int y) {
+    public synchronized void setPosition(char x, int y) {
         rwlock.writeLock().lock();
         try {
             this.x = x;
@@ -15,7 +15,7 @@ public class AndereFigur extends Figur {
         }
     }
 
-    public String getPosition() {
+    public synchronized String getPosition() {
         rwlock.readLock().lock();
         try {
             MachMal.eineSekundeLangGarNichts();

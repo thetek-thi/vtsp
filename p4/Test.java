@@ -21,6 +21,7 @@ public class Test {
 
         public void run() {
             for (var i = 0; i < 10; i++) {
+                System.out.print(""); // required because otherwise the threads don't get "distributed" properly
                 synchronized (System.out) { // for correct output order
                     try {
                         var next = id.getNext();

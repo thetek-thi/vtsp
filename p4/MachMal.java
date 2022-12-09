@@ -1,7 +1,7 @@
 public class MachMal {
   public static void eineZehntelSekundeLangGarNichts() {
     try {
-      Thread.sleep(100);
+      Thread.sleep(10);
     } 
     catch (InterruptedException e) {
     }
@@ -9,7 +9,7 @@ public class MachMal {
 
   public static void eineSekundeLangGarNichts() {
     try {
-      Thread.sleep(1000);
+      Thread.sleep(100);
     } 
     catch (InterruptedException e) {
     }

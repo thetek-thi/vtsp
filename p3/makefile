@@ -1,6 +1,6 @@
 CC     := gcc
 CFLAGS := -Wall -Wextra -g
-RPCLIB := -ltirpc -I/usr/include/tirpc
+#RPCLIB := -ltirpc -I/usr/include/tirpc
 
 
 all: reader-writer rpc

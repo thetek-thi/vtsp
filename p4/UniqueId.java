@@ -17,10 +17,7 @@ public class UniqueId {
 		out.close();
 	}		
 
-	public int getNext() throws IOException {
-        rwlock.writeLock().lock();
-
-        try {
+	public synchronized int getNext() throws IOException {
             DataInputStream in = new DataInputStream(new FileInputStream(file));
             int oldId = in.readInt();
             in.close();
@@ -31,8 +28,5 @@ public class UniqueId {
             out.close();
 
             return newId;
-        } finally {
-            rwlock.writeLock().unlock();
-        }
 	}
 }
