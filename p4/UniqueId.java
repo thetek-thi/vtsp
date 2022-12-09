@@ -1,11 +1,8 @@
 // Datei: UniqueId.java
 import java.io.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class UniqueId {
 	private String file;
-    private ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
 	public UniqueId(String file) {
 		this.file = file;
